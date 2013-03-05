@@ -1,0 +1,5 @@
+; this will test the DAT pseudocommand
+
+:main
+SET A, 30
+SET [A+3], A
