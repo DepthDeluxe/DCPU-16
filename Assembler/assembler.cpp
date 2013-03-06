@@ -14,51 +14,27 @@ using namespace std;
 #include "Dictionary.h"
 #include "conditions.h"
 
+#define INVALID_LABEL_POS	-1
+
 // helper functions
 vector<string> SplitString(string toSplit, char delim);
-ConditionReturn ProcessValue(string text, Dictionary& dict);
+ConditionReturn ProcessValue(string text, Dictionary& valuesDict, Dictionary& labelsDict);
 
 // functions that load dictionaries
 void SetUpOpcodes(Dictionary* dictionary);
 void SetUpValues(Dictionary* dictionary);
 
-// data structure to hold the information about 
-struct AssemblyLabel
-{
-	string name;
-	UINT16 pointer;
-
-	// make sure value is set to zero on init
-	AssemblyLabel()
-	{
-		pointer = 0;
-	}
-
-	AssemblyLabel(string s)
-	{
-		name = s;
-		pointer = 0;
-	}
-};
-
 struct ReferencePointer
 {
-	int instructionAddress;		// holds the position of the instruction in memory
-	int offsetValue;			// holds the value that the label reference should be offset by
-	int labelNumber;				// holds the label number
+	int instructionNumber;
+	int labelNumber;
+	BOOL refersToA;
 
-	ReferencePointer()
+	ReferencePointer(int instructionNum, int labelNum, BOOL isAReference)
 	{
-		instructionAddress = 0;
-		offsetValue = 0;
-		labelNumber = 0;
-	}
-
-	ReferencePointer(int pointer, int offset, int label)
-	{
-		instructionAddress = pointer;
-		offsetValue = offset;
-		labelNumber = label;
+		instructionNumber = instructionNum;
+		labelNumber = labelNum;
+		refersToA = isAReference;
 	}
 };
 
@@ -101,8 +77,8 @@ void main(int argc, char** argv)
 	// entire file is now in memory
 	inFile.close();
 
-	// save all labels in program
-	vector<AssemblyLabel> labels;
+	// get all the labels for easy label checking later on
+	Dictionary labelsDictionary;
 	for(UINT n = 0; n < fileContents.size(); n++)
 	{
 		if (fileContents[n].size() == 0)
@@ -114,27 +90,20 @@ void main(int argc, char** argv)
 			string labelName = SplitString(fileContents[n], ' ')[0];
 			labelName = &labelName[1];
 
-			AssemblyLabel tempLabel(labelName);
-
-			// check to see if there is already another label of the same name
-			bool canAdd = true;
-			for (UINT n = 0; n < labels.size(); n++)
+			// check to see if this label already exists
+			if (labelsDictionary.IsAKey(labelName))
 			{
-				if (labels[n].name == tempLabel.name)
-				{
-					cout << "Error: Label \"" << labels[n].name << "\" has been previously used!" << endl << endl;
-					return;
-				}
+				cout << "Error: Line " << n << " has a label redefinition!" << endl;
+				return;
 			}
 
-			// add to label list
-			if (tempLabel.name.length() > 0)
-				labels.push_back(tempLabel);
+			// add the label with a null value (will be replaced later)
+			labelsDictionary.AddItem(NULL, labelName.c_str());
 		}
 	}
 
 
-	vector<UINT16> assembledCode;				// container in memory for assembled code
+	vector<DCPU_Instruction> instructions;		// holds the instructions before complete construction
 	UINT16 instructionCount = 0;				// keeps track of the number of instructions
 	vector<ReferencePointer> labelReferences;	// This holds information about which pieces of code have given references
 												// to labels.  After putting all instructions together, the program will
@@ -160,20 +129,21 @@ void main(int argc, char** argv)
 		if (lineText[0] == ';')
 			continue;
 
-		// save instruction pointer at that location
+		// save the instruction count at the label point
 		if (lineText[0] == ':')
 		{
 			string labelName = SplitString(lineText, ' ')[0];
 			labelName = &labelName[1];
 
-			// search for label and change the pointer
-			for (UINT n = 0; n < labels.size(); n++)
+			// look for a label and change the pointer
+			try
 			{
-				if (labels[n].name == labelName)
-				{
-					labels[n].pointer = instructionCount;
-					break;
-				}
+				labelsDictionary[labelName.c_str()] = instructionCount;
+			}
+			catch(int e)
+			{
+				cout << "Something weird happened with the labels..." << endl;
+				return;
 			}
 
 			// remove the first part of the line and
@@ -239,19 +209,25 @@ void main(int argc, char** argv)
 		// do other stuff if the command is DAT
 		if (binaryCommand == DAT)
 		{
-			// get rid of starting DAT
+			// remove the 'DAT '
 			lineText = &lineText[4];
 
-			// do other stuff
+			// do other stuff...
 		}
 
 		// get the A and B values
 		ConditionReturn aReturn, bReturn;
-		aReturn = ProcessValue(aText, valuesDictionary);
+		aReturn = ProcessValue(aText, valuesDictionary, labelsDictionary);
+		if (aReturn.isLabel)
+			labelReferences.push_back( ReferencePointer(instructions.size(), aReturn.nextword, TRUE) );
 
 		// only process b command if bText has been set
 		if (bText != "null")
-			bReturn = ProcessValue(bText, valuesDictionary);
+		{
+			bReturn = ProcessValue(bText, valuesDictionary, labelsDictionary);
+			if (bReturn.isLabel)
+				labelReferences.push_back( ReferencePointer(instructions.size(), bReturn.nextword, FALSE) );
+		}
 		else
 		{
 			// if it is a special opcode, command should be put in b value
@@ -259,40 +235,32 @@ void main(int argc, char** argv)
 			binaryCommand = 0;
 		}
 
-		// now combine all into one instruction
-		UINT16 instruction = 0;
+		// assemble the instruction and add to the list
+		DCPU_Instruction instruction;
+		instruction.opcode	= binaryCommand;
+		instruction.a		= aReturn.value;
+		instruction.b		= bReturn.value;
+		instruction.nextA	= aReturn.nextword;
+		instruction.nextB	= bReturn.nextword;
+		instruction.isALabel = aReturn.isLabel;
+		instruction.isBLabel = bReturn.isLabel;
 
-		instruction += aReturn.value, 6;
-		instruction = instruction << 5;
+		instructions.push_back(instruction);
 
-		instruction += bReturn.value, 5;
-		instruction = instruction << 5;
-
-		instruction += binaryCommand;
-
-		// now add it to binary saved in code
-		assembledCode.push_back(instruction);
-		instructionCount++;
-
-		if (aReturn.nextword != -1)
-		{
-			assembledCode.push_back(aReturn.nextword);
-			instructionCount++;
-		}
-		if (bReturn.nextword != -1)
-		{
-			assembledCode.push_back(bReturn.nextword);
-			instructionCount++;
-		}
+		// increment the instruction count
+		instructionCount += 1 + (int)(instruction.nextA != -1) + (int)(instruction.nextB != -1);
 	}
 
-	// once done compiling everything, fix label references
+	// now fix all the label references so that they reflect the appropriate position
 	for (UINT n = 0; n < labelReferences.size(); n++)
 	{
-		int wordToBeChanged = labelReferences[n].instructionAddress;
-		int labelNumber = labelReferences[n].labelNumber;
+		ReferencePointer pointer = labelReferences[n];
+		DCPU_Instruction* instruction = &instructions[pointer.instructionNumber];
 
-		assembledCode[wordToBeChanged] = labels[labelNumber].pointer;
+		if (pointer.refersToA)
+			instruction->nextA = labelsDictionary[pointer.labelNumber];
+		else
+			instruction->nextB = labelsDictionary[pointer.labelNumber];
 	}
 
 	// now save all program information
@@ -302,9 +270,37 @@ void main(int argc, char** argv)
 	ofstream outFile;
 	outFile.open(outFileName, ios::binary);
 
-	// save the program to a file :D
-	for (UINT n = 0; n < assembledCode.size(); n++)
-		outFile.write((char*)&assembledCode[n], 2);
+	// now write the instructions to the file
+	for(UINT n = 0; n < instructions.size(); n++)
+	{
+		// get an instruction
+		DCPU_Instruction instruction = instructions[n];
+		UINT16 binary = 0;
+
+		// convert it to binary form
+		binary += instruction.a;
+		binary = binary << 5;
+
+		binary += instruction.b;
+		binary = binary << 5;
+
+		binary += instruction.opcode;
+
+		// write the binary to the file
+		outFile.write((char*)&binary, 2);
+
+		// add the extra bytes on the end if necessary
+		if (instruction.nextA != -1)
+		{
+			UINT16 nextA = (UINT16)instruction.nextA;
+			outFile.write((char*)&nextA, 2);
+		}
+		if (instruction.nextB != -1)
+		{
+			UINT16 nextB = (UINT16)instruction.nextB;
+			outFile.write((char*)&nextB, 2);
+		}
+	}
 
 	outFile.close();
 }
@@ -344,11 +340,11 @@ vector<string> SplitString(string toSplit, char delim)
 }
 
 // this function processes all of the possible options for a value to have
-ConditionReturn ProcessValue(string text, Dictionary& dict)
+ConditionReturn ProcessValue(string text, Dictionary& valuesDict, Dictionary& labelsDict)
 {
 	ConditionReturn result;
 
-	result = TryRegValue(text, dict);
+	result = TryRegValue(text, valuesDict);
 	if (result.value != -1)
 		return result;
 
@@ -356,7 +352,11 @@ ConditionReturn ProcessValue(string text, Dictionary& dict)
 	if (result.value != -1)
 		return result;
 
-	result = TryAddBy(text, dict);
+	result = TryAddBy(text, valuesDict);
+	if (result.value != -1)
+		return result;
+
+	result = TryLabel(text, valuesDict, labelsDict);
 	if (result.value != -1)
 		return result;
 

@@ -116,7 +116,7 @@ ConditionReturn TryAddBy(string text, Dictionary& dictionary)
 	text.resize(text.length()-1);
 
 	int splitLoc = -1;
-	for (int n = 0; n < text.length(); n++)
+	for (UINT n = 0; n < text.length(); n++)
 	{
 		splitLoc++;
 		if (text[n] == '+')
@@ -163,6 +163,73 @@ ConditionReturn TryAddBy(string text, Dictionary& dictionary)
 	{
 		result.value = PICK;
 		result.nextword = secondValue;
+	}
+
+	return result;
+}
+
+ConditionReturn TryLabel(string text, Dictionary& valuesDict, Dictionary& labelDict)
+{
+	ConditionReturn result;
+
+	// check for direct reference
+	if (labelDict.IsAKey(text))
+	{
+		result.value = NEXTWORD;
+		result.nextword = labelDict.GetKeyNumber(text.c_str());
+		result.isLabel = TRUE;
+		return result;
+	}
+
+	// try removing parenthesis
+	if (text.length() < 3)
+		return result;
+
+	text = &text[1];
+	text.resize(text.length() - 1);
+
+	// check to see if it is a reference
+	if (labelDict.IsAKey(text))
+	{
+		result.value = NEXTWORD_VALUE;
+		result.nextword = labelDict.GetKeyNumber(text.c_str());
+		result.isLabel = TRUE;
+		return result;
+	}
+	
+	// find where to split
+	int splitLoc = -1;
+	for (UINT n = 0; n < text.length(); n++)
+	{
+		if (text[n] == '+')
+		{
+			splitLoc = n;
+			break;
+		}
+	}
+
+	if (splitLoc == -1)
+		return result;
+
+	// and split
+	string firstHalf = text;
+	firstHalf.resize(splitLoc);
+	string lastHalf = &text[splitLoc+1];
+
+	int firstValue = TryRegValue(firstHalf, valuesDict).value;
+
+	if (firstValue == CONDITION_FAIL)
+		return result;
+
+	if (labelDict.IsAKey(lastHalf))
+	{
+		if (firstValue == SP)
+			result.value = PICK;
+		else
+			result.value = firstValue + 0x10;
+
+		result.nextword = labelDict.GetKeyNumber(lastHalf.c_str());
+		result.isLabel = TRUE;
 	}
 
 	return result;

@@ -98,4 +98,15 @@
 //
 #define DAT		0xff
 
+// holds the structure of a DCPU instruction
+struct DCPU_Instruction
+{
+	int opcode, a, b;
+	int nextA;
+	int nextB;
+
+	BOOL isALabel;
+	BOOL isBLabel;
+};
+
 #endif
