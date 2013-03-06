@@ -38,9 +38,42 @@ BOOL Dictionary::RemoveItem(int item, const char* key)
 	return FALSE;
 }
 
+int Dictionary::GetKeyNumber(const char* key)
+{
+	for (UINT n = 0; n < length; n++)
+	{
+		if( strcmp(keys[n].c_str(), key) == 0 )
+			return n;
+	}
+
+	throw DICTIONARY_INVALID_KEY;
+}
+
 UINT Dictionary::Length()
 {
 	return length;
+}
+
+BOOL Dictionary::IsAKey(string key)
+{
+	for (int n = 0; n < length; n++)
+	{
+		if (key == keys[n])
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+BOOL Dictionary::IsAKey(const char* key)
+{
+	for (int n = 0; n < length; n++)
+	{
+		if (strcmp(key, keys[n].c_str()) == 0 )
+			return TRUE;
+	}
+
+	return FALSE;
 }
 
 int& Dictionary::operator[](const char* key)
@@ -54,6 +87,11 @@ int& Dictionary::operator[](const char* key)
 	}
 
 	throw DICTIONARY_INVALID_KEY;		// throw an exception if the key wasn't found
+}
+
+int& Dictionary::operator[](int number)
+{
+	return items[number];
 }
 
 #endif

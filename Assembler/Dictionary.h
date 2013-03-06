@@ -22,9 +22,15 @@ public:
 	BOOL AddItem(int item, const char* key);
 	BOOL RemoveItem(int item, const char* key);
 
+	int GetKeyNumber(const char* key);
+
 	UINT Length();
+
+	BOOL IsAKey(string key);
+	BOOL IsAKey(const char* key);
 	
 	int& operator[] (const char* key);		// bracket, [], override
+	int& operator[] (int number);
 };
 
 #endif
