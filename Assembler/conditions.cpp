@@ -49,7 +49,7 @@ ConditionReturn TryRawInt(string text)
 
 	if (text == "0")
 	{
-		result.value = 0;
+		result.value = 0x21;		// it is 0x21 because of the shifted literal def
 		return result;
 	}
 	if (text == "[0]")
@@ -61,17 +61,17 @@ ConditionReturn TryRawInt(string text)
 	}
 
 	// first try raw value
-	result.value = atof(text.c_str());
+	int value = atoi(text.c_str());
 
 	// convert to literal value and return
-	if (result.value != 0)
+	if (value != 0)
 	{
-		if (result.value > -2 && result.value < 31)
-			result.value += 0x21;		// can put literal value in code
+		if (value > -2 && value < 31)
+			result.value = value + 0x21;		// can put literal value in code
 		else
 		{
-			result.nextword = result.value;
 			result.value = NEXTWORD;
+			result.nextword = value;
 		}
 
 		return result;
@@ -79,26 +79,21 @@ ConditionReturn TryRawInt(string text)
 
 	// don't do anything more if the string is less than 3 characters long
 	if (text.length() < 3)
-	{
-		result.value = CONDITION_FAIL;
 		return result;
-	}
 
 	// now try to remove brackets (at start and end)
 	text = &text[1];
 	text.resize(text.length()-1);
 
 	// and try the value again
-	result.value = atof(text.c_str());
+	value = atof(text.c_str());
 
-	if (result.value != 0)
+	if (value != 0)
 	{
-		result.nextword = result.value;
 		result.value = NEXTWORD_VALUE;
+		result.nextword = value;
 	}
 
-	// if couldn't do anything, return false
-	result.value = CONDITION_FAIL;
 	return result;
 }
 
@@ -123,7 +118,7 @@ ConditionReturn TryAddBy(string text, Dictionary& dictionary)
 	}
 
 	// can't do anything if there was no plus
-	if (splitLoc == text.length())
+	if (splitLoc == text.length()-1)
 		return result;
 
 	// split the two values
@@ -261,6 +256,8 @@ BOOL ProcessDat(string text, vector<DCPU_Instruction>& instructions, UINT16& ins
 				DCPU_Instruction newInstruction;
 				newInstruction.opcode = NO_OP_DATA;
 				newInstruction.a = number;
+				newInstruction.nextA = -1;
+				newInstruction.nextB = -1;
 
 				instructions.push_back(newInstruction);
 				instructionCount++;
@@ -286,6 +283,8 @@ BOOL ProcessDat(string text, vector<DCPU_Instruction>& instructions, UINT16& ins
 					DCPU_Instruction newInstruction;
 					newInstruction.opcode = NO_OP_DATA;
 					newInstruction.a = (int)tempStr[x];
+					newInstruction.nextA = -1;
+					newInstruction.nextB = -1;
 
 					instructions.push_back(newInstruction);
 					instructionCount++;
