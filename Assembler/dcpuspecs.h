@@ -1,6 +1,8 @@
 #ifndef DCPUSPECS
 #define DCPUSPECS
 
+#include <windows.h>
+
 ///
 // Values (5/6 bits) 
 ///
@@ -41,6 +43,8 @@
 #define EX						0x1d
 #define NEXTWORD_VALUE			0x1e
 #define NEXTWORD				0x1f
+
+#define NO_OP_DATA				0xff		// marker for DAT
 
 
 ///
@@ -92,11 +96,6 @@
 #define HWN		0x10
 #define HWQ		0x11
 #define HWI		0x12
-
-//
-// Data specifier
-//
-#define DAT		0xff
 
 // holds the structure of a DCPU instruction
 struct DCPU_Instruction
