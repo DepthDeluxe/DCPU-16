@@ -4,6 +4,7 @@
 #include <string>
 using namespace std;
 
+#include "dcpuspecs.h"
 #include "Dictionary.h"
 
 #define CONDITION_FAIL -1
@@ -22,5 +23,7 @@ ConditionReturn TryRegValue(string text, Dictionary& dictionary);
 ConditionReturn TryRawInt(string text);
 ConditionReturn TryAddBy(string text, Dictionary& dictionary);
 ConditionReturn	TryLabel(string text, Dictionary& valuesDict, Dictionary& labelDict);
+
+BOOL ProcessDat(string text, vector<DCPU_Instruction>& instructions, UINT16& instructionCount);
 
 #endif

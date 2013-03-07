@@ -2,7 +2,6 @@
 #define CONDITIONS_CPP
 
 #include "conditions.h"
-
 #include "dcpuspecs.h"
 
 ConditionReturn TryRegValue(string text, Dictionary& dictionary)
@@ -233,6 +232,84 @@ ConditionReturn TryLabel(string text, Dictionary& valuesDict, Dictionary& labelD
 	}
 
 	return result;
+}
+
+BOOL ProcessDat(string text, vector<DCPU_Instruction>& instructions, UINT16& instructionCount)
+{
+	bool inQuote = false;		// keeps track of the starting quote
+	bool inLiteral = false;		// keeps track to see if the string is in a literal
+	string tempStr = "";		// holds the temporary info
+	for (int n = 0; n < text.length(); n++)
+	{
+		if (text[n] == ',' && !inQuote)
+		{
+			if (inLiteral)
+			{
+				int number;
+				if (tempStr == "0")
+					number = 0;
+				else
+				{
+					number = atoi(tempStr.c_str());
+					
+					// fail if the string is invalid
+					if (number == 0)
+						return FALSE;
+				}
+
+				// add a new instruction with the NO_OP flag
+				DCPU_Instruction newInstruction;
+				newInstruction.opcode = NO_OP_DATA;
+				newInstruction.a = number;
+
+				instructions.push_back(newInstruction);
+				instructionCount++;
+
+				// clear the string and reset flag
+				tempStr = "";
+				inLiteral = false;
+			}
+			else
+				inLiteral = true;
+
+			// no matter what, move on
+			continue;
+		}
+
+		if (text[n] == '\"' && !inLiteral)
+		{
+			if (inQuote)
+			{
+				// add all of the string values byte by byte
+				for (int x = 0; x < tempStr.length(); x++)
+				{
+					DCPU_Instruction newInstruction;
+					newInstruction.opcode = NO_OP_DATA;
+					newInstruction.a = (int)tempStr[x];
+
+					instructions.push_back(newInstruction);
+					instructionCount++;
+				}
+
+				// reset the string and quote flag
+				tempStr = "";
+				inQuote = false;
+			}
+			else
+				inQuote = true;
+
+			// no matter what, continue
+			continue;
+		}
+
+		// ignore spaces in literals
+		if (text[n] == ' ' && !inQuote)
+			continue;
+
+		tempStr += text[n];
+	}
+
+	return TRUE;
 }
 
 #endif
