@@ -184,8 +184,11 @@ void main(int argc, char** argv)
 			break;
 
 		default:
-			cout << "Error: Line " << lineNumber+1 << " has too many arguments!" << endl << endl;
-			return;
+			if (command != "DAT")
+			{
+				cout << "Error: Line " << lineNumber+1 << " has too many arguments!" << endl << endl;
+				return;
+			}
 		}
 		
 		// binary parts of instruction
@@ -201,18 +204,25 @@ void main(int argc, char** argv)
 		}
 		catch(int e)
 		{
+			if (command == "DAT")
+			{
+				// return value is crap
+				BOOL result = ProcessDat(&lineText[4], instructions, instructionCount);
+				
+				// if DAT didn't work, throw an error
+				if (!result)
+				{
+					cout << "Error: Line " << lineNumber+1 << " has invalid DAT values!" << endl;
+					return;
+				}
+
+				// skip to the next line
+				continue;
+			}
+
 			// command not found in dict
 			cout << "Error: Line " << lineNumber+1 << " has an invalid command!" << endl;
 			return;
-		}
-
-		// do other stuff if the command is DAT
-		if (binaryCommand == DAT)
-		{
-			// remove the 'DAT '
-			lineText = &lineText[4];
-
-			// do other stuff...
 		}
 
 		// get the A and B values
@@ -277,14 +287,22 @@ void main(int argc, char** argv)
 		DCPU_Instruction instruction = instructions[n];
 		UINT16 binary = 0;
 
-		// convert it to binary form
-		binary += instruction.a;
-		binary = binary << 5;
+		// check for NO_OP
+		if (instruction.opcode != NO_OP_DATA)
+		{
+			// convert it to binary form
+			binary += instruction.a;
+			binary = binary << 5;
 
-		binary += instruction.b;
-		binary = binary << 5;
+			binary += instruction.b;
+			binary = binary << 5;
 
-		binary += instruction.opcode;
+			binary += instruction.opcode;
+		}
+		else
+		{
+			binary = instruction.a;
+		}
 
 		// write the binary to the file
 		outFile.write((char*)&binary, 2);
@@ -408,9 +426,6 @@ void SetUpOpcodes(Dictionary* dictionary)
 	dictionary->AddItem(HWN, "HWN");
 	dictionary->AddItem(HWQ, "HWQ");
 	dictionary->AddItem(HWI, "HWI");
-
-	// data command
-	dictionary->AddItem(DAT, "DAT");
 }
 
 void SetUpValues(Dictionary* dictionary)
