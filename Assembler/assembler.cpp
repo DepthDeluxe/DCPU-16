@@ -167,7 +167,8 @@ void main(int argc, char** argv)
 		string command = lineComponents[0];
 
 		// get a and b arguments
-		string aText,bText = "null";
+		string aText = "null";
+		string bText = "null";
 
 		switch(lineComponents.size())
 		{
@@ -421,6 +422,7 @@ void SetUpOpcodes(Dictionary* dictionary)
 	dictionary->AddItem(JSR, "JSR");
 	dictionary->AddItem(SINT, "SINT");
 	dictionary->AddItem(IAG, "IAG");
+	dictionary->AddItem(IAS, "IAS");
 	dictionary->AddItem(RFI, "RFI");
 	dictionary->AddItem(IAQ, "IAQ");
 	dictionary->AddItem(HWN, "HWN");
@@ -434,11 +436,11 @@ void SetUpValues(Dictionary* dictionary)
 	dictionary->AddItem(REG_A, "A");
 	dictionary->AddItem(REG_B, "B");
 	dictionary->AddItem(REG_C, "C");
-	dictionary->AddItem(REG_X, "D");
-	dictionary->AddItem(REG_Y, "E");
-	dictionary->AddItem(REG_Z, "F");
-	dictionary->AddItem(REG_I, "G");
-	dictionary->AddItem(REG_J, "H");
+	dictionary->AddItem(REG_X, "X");
+	dictionary->AddItem(REG_Y, "Y");
+	dictionary->AddItem(REG_Z, "Z");
+	dictionary->AddItem(REG_I, "I");
+	dictionary->AddItem(REG_J, "J");
 	
 	// special values
 	dictionary->AddItem(PUSH, "PUSH");
