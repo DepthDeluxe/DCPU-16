@@ -1,5 +1,22 @@
-; this will test the DAT pseudocommand
+; now that I have this down, I will do stuff with it
 
-:main
-SET A, 30
-SET [A+3], A
+; initialize the display
+SET A, 0
+SET B, 100
+HWI 2
+
+SET I, 0
+
+:letterFunc
+SET A, 15
+SHL A, 12
+SET B, [I+mystuffz]
+ADD A, B
+SET [I+100], A
+ADD I, 1
+
+IFN I, 10
+SET PC, letterFunc
+
+:mystuffz
+DAT "I am alive"
