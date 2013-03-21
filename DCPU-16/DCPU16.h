@@ -1,7 +1,7 @@
 //	File: DCPU16.h
 //
 //	Author: Colin Heinzmann
-//	Description: This is an emulator for 
+//	Description: This contains a class that emulates a DCPU
 
 #ifndef DCPU16_H
 #define DCPU16_H
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "DCPUHardware.h"
+#include "InterruptQueue.h"
 
 using namespace std;
 
@@ -132,8 +133,7 @@ private:
 	InterruptStatus	interruptStatus;		// flag to see if an interrupt has been requested on the hardware
 	BOOL			isQueueingInterrupts;	// if this is true, all interrupts get stored in the interrupt queue
 	BOOL			isIgnoringInterrupts;	// if true, then interrupts will be ignored
-
-	vector<UINT16>	InterruptQueue;			// holds the function pointer for start of interrupt
+	InterruptQueue	interruptQueue;		// holds all the interrupt messages
 
 	vector<DCPUHardware*> attachedHardware; // holds information about attached hardware
 

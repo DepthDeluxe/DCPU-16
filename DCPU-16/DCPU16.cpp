@@ -35,7 +35,7 @@ DCPU16::DCPU16()
 BOOL DCPU16::NextInstruction()
 {
 	// handle interrupts
-	if (interruptStatus == NONE && isQueueingInterrupts == FALSE && InterruptQueue.size() > 0)
+	if (interruptStatus == NONE && isQueueingInterrupts == FALSE && !interruptQueue.isEmpty())
 	{
 		// push PC then A onto stack
 		this->Push(ProgramCounter);
@@ -43,10 +43,7 @@ BOOL DCPU16::NextInstruction()
 
 		// now set PC to IA and then A to message
 		ProgramCounter = InterruptAddress;
-		Register[REG_A] = InterruptQueue[0];
-
-		// pop the interrupt queue out
-		InterruptQueue.erase(InterruptQueue.begin());
+		Register[REG_A] = interruptQueue.DeQueue();
 
 		// remove request to continue normal operation,
 		// the interrupt handler should pop the crap
@@ -563,7 +560,7 @@ BOOL DCPU16::TriggerInterrupt(UINT16 message)
 	// add the message to interrupt queue even
 	// if queuing disabled, the interrupt should trigger
 	// at the beginning of the next cycle
-	InterruptQueue.push_back(message);
+	interruptQueue.EnQueue(message);
 }
 
 void DCPU16::SetPC(int location)

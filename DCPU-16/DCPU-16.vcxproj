@@ -146,6 +146,7 @@
     <ClCompile Include="DCPU16.cpp" />
     <ClCompile Include="DCPUHardware.cpp" />
     <ClCompile Include="GenericKeyboard.cpp" />
+    <ClCompile Include="InterruptQueue.cpp" />
     <ClCompile Include="LEM1802.cpp" />
     <ClCompile Include="M35FD.cpp" />
     <ClCompile Include="main.cpp" />
@@ -154,13 +155,13 @@
   <ItemGroup>
     <None Include="default_font.ini" />
     <None Include="default_pallete.ini" />
-    <None Include="notes.txt" />
     <None Include="specification.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DCPU16.h" />
     <ClInclude Include="DCPUHardware.h" />
     <ClInclude Include="GenericKeyboard.h" />
+    <ClInclude Include="InterruptQueue.h" />
     <ClInclude Include="LEM1802.h" />
     <ClInclude Include="M35FD.h" />
     <ClInclude Include="Pixel.h" />

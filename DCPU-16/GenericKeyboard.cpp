@@ -100,111 +100,114 @@ BOOL GenericKeyboard::KeyDown(WPARAM wParam, LPARAM lParam)
 		break;
 	}
 
-	if (isShiftDown)
+	if (convertedKey == NULL)
 	{
-		switch (wParam)
+		if (isShiftDown)
 		{
-		case '`':
-			convertedKey = '~';
-			break;
+			switch (wParam)
+			{
+			case '`':
+				convertedKey = '~';
+				break;
 
-		case '1':
-			convertedKey = '!';
-			break;
+			case '1':
+				convertedKey = '!';
+				break;
 
-		case '2':
-			convertedKey = '@';
-			break;
+			case '2':
+				convertedKey = '@';
+				break;
 
-		case '3':
-			convertedKey = '#';
-			break;
+			case '3':
+				convertedKey = '#';
+				break;
 
-		case '4':
-			convertedKey = '$';
-			break;
+			case '4':
+				convertedKey = '$';
+				break;
 
-		case '5':
-			convertedKey = '%';
-			break;
+			case '5':
+				convertedKey = '%';
+				break;
 
-		case '6':
-			convertedKey = '^';
-			break;
+			case '6':
+				convertedKey = '^';
+				break;
 
-		case '7':
-			convertedKey = '&';
-			break;
+			case '7':
+				convertedKey = '&';
+				break;
 
-		case '8':
-			convertedKey = '*';
-			break;
+			case '8':
+				convertedKey = '*';
+				break;
 
-		case '9':
-			convertedKey = '(';
-			break;
+			case '9':
+				convertedKey = '(';
+				break;
 
-		case '0':
-			convertedKey = ')';
-			break;
+			case '0':
+				convertedKey = ')';
+				break;
 
-		case '-':
-			convertedKey = '_';
-			break;
+			case '-':
+				convertedKey = '_';
+				break;
 
-		case '=':
-			convertedKey = '+';
-			break;
+			case '=':
+				convertedKey = '+';
+				break;
 
-		case '[':
-			convertedKey = '{';
-			break;
-			
-		case ']':
-			convertedKey = '}';
-			break;
+			case '[':
+				convertedKey = '{';
+				break;
 
-		case '\\':
-			convertedKey = '|';
-			break;
+			case ']':
+				convertedKey = '}';
+				break;
 
-		case ';':
-			convertedKey = ':';
-			break;
+			case '\\':
+				convertedKey = '|';
+				break;
 
-		case '\'':
-			convertedKey = '"';
-			break;
+			case ';':
+				convertedKey = ':';
+				break;
 
-		case ',':
-			convertedKey = '<';
-			break;
+			case '\'':
+				convertedKey = '"';
+				break;
 
-		case '.':
-			convertedKey = '>';
-			break;
+			case ',':
+				convertedKey = '<';
+				break;
 
-		case '/':
-			convertedKey = '?';
-			break;
+			case '.':
+				convertedKey = '>';
+				break;
 
-		default:
-			convertedKey = wParam;
-			break;
+			case '/':
+				convertedKey = '?';
+				break;
+
+			default:
+				convertedKey = wParam;
+				break;
+			}
 		}
+
+		else if (wParam > 64 && wParam < 91)
+			convertedKey = wParam + 32;
+
+		else
+			convertedKey = wParam;
 	}
-
-	else if (wParam > 64 && wParam < 91)
-		convertedKey = wParam + 32;
-
-	else
-		convertedKey = wParam;
 
 	// add the key to buffer
 	AddToBuffer(convertedKey);
 
 	if (isSendingInterrupts)
-		((DCPU16*)dcpuPtr)->TriggerInterrupt(interruptMessage);
+		((DCPU16*)dcpuPtr)->TriggerInterrupt(convertedKey);
 
 	return TRUE;
 }
