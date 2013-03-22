@@ -93,7 +93,7 @@ BOOL DCPU16::NextInstruction()
 	case REG_Z_VALUE:
 	case REG_I_VALUE:
 	case REG_J_VALUE:
-		valueA = &Ram[Register[binaryA]];
+		valueA = &Ram[Register[binaryA-0x08]];			// need to subtract to remove indirection flag
 		break;
 
 	case REG_A_NEXTWORD:
@@ -105,15 +105,15 @@ BOOL DCPU16::NextInstruction()
 	case REG_I_NEXTWORD:
 	case REG_J_NEXTWORD:
 		ProgramCounter++;
-		valueA = &Ram[Register[binaryA-0x10] + Ram[ProgramCounter]];
+		valueA = &Ram[Register[binaryA-0x10] + Ram[ProgramCounter]];		// need to subtract to remove nextword flag
 		break;
 
 	case POP:
 		valueA = &Ram[StackPointer];
 
-		// check stack pointer range [0x0000,0xffff]
 		if (StackPointer < 0xffff)
 			StackPointer++;
+
 		break;
 
 	case PEEK:
@@ -180,7 +180,7 @@ BOOL DCPU16::NextInstruction()
 		case REG_Z_VALUE:
 		case REG_I_VALUE:
 		case REG_J_VALUE:
-			valueB = &Ram[Register[binaryB]];
+			valueB = &Ram[Register[binaryB-0x08]];				// need to subtract 0x08 to get rid of the indirection flag
 			break;
 
 		case REG_A_NEXTWORD:
@@ -192,15 +192,17 @@ BOOL DCPU16::NextInstruction()
 		case REG_I_NEXTWORD:
 		case REG_J_NEXTWORD:
 			ProgramCounter++;
-			valueB = &Ram[Register[binaryB-0x10] + Ram[ProgramCounter]];
+			valueB = &Ram[Register[binaryB-0x10] + Ram[ProgramCounter]];	// need to subtract 0x10 to get rid of nextword flag
 			break;
 
 		case PUSH:
-			// check stack pointer range [0x0000,0xffff]
-			if (StackPointer > 0x00 && StackPointer != 0xffff)
+			// move back the stack pointer
+			if (StackPointer > 0)
 				StackPointer--;
 
+			// and set the value
 			valueB = &Ram[StackPointer];
+			
 			break;
 
 		case PEEK:
@@ -561,6 +563,8 @@ BOOL DCPU16::TriggerInterrupt(UINT16 message)
 	// if queuing disabled, the interrupt should trigger
 	// at the beginning of the next cycle
 	interruptQueue.EnQueue(message);
+
+	return TRUE;
 }
 
 void DCPU16::SetPC(int location)
