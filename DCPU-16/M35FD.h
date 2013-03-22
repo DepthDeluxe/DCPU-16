@@ -1,3 +1,8 @@
+//	File: M35FD.h
+//
+//	Author: Colin Heinzmann
+//	Description: Emulates the M35FD floppy drive (as described at dcpu.com/floppy-drive/
+
 #ifndef M35FD_H
 #define M35FD_H
 

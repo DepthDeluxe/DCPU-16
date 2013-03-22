@@ -1,3 +1,9 @@
+//	File: Pixel.h
+//
+//	Author: Colin Heinzmann
+//	Description: Class that stores data to draw an individual pixel on the screen
+//				 using the DirectX library
+
 #ifndef PIXEL_H
 #define PIXEL_H
 

@@ -1,3 +1,8 @@
+//	File: GenericKeyboard.h
+//
+//	Author: Colin Heinzmann
+//	Description: Emulates the generic keyboard as specified at dcpu.com/keyboard
+
 #ifndef GENERIC_KEYBOARD_H
 #define GENERIC_KEYBOARD_H
 

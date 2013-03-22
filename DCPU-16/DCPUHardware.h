@@ -1,3 +1,8 @@
+//	File: DCPUHardware.h
+//
+//	Author: Colin Heinzmann
+//	Description: Base class that all DCPU hardware classes inherit
+
 #ifndef DCPUHARDWARE_H
 #define DCPUHARDWARE_H
 
