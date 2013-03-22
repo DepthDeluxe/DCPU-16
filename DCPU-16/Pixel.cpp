@@ -32,40 +32,40 @@ void Pixel::Move(UINT destX, UINT destY)
 	y = destY;
 
 	// top left
-	vertices[0].x = x;
-	vertices[0].y = y;
-	vertices[0].z = 0;
-	vertices[0].rhw = 0;
+	vertices[0].x = (FLOAT)x;
+	vertices[0].y = (FLOAT)y;
+	vertices[0].z = 0.0f;
+	vertices[0].rhw = 0.0f;
 
 	// top right
-	vertices[1].x = x + width;
-	vertices[1].y = y;
-	vertices[1].z = 0;
-	vertices[1].rhw = 0;
+	vertices[1].x = (FLOAT)(x + width);
+	vertices[1].y = (FLOAT)y;
+	vertices[1].z = 0.0f;
+	vertices[1].rhw = 0.0f;
 
 	// bottom left
-	vertices[2].x = x;
-	vertices[2].y = y + height;
-	vertices[2].z = 0;
-	vertices[2].rhw = 0;
+	vertices[2].x = (FLOAT)x;
+	vertices[2].y = (FLOAT)(y + height);
+	vertices[2].z = 0.0f;
+	vertices[2].rhw = 0.0f;
 
 	// bottom left 2
-	vertices[3].x = x;
-	vertices[3].y = y + height;
-	vertices[3].z = 0;
-	vertices[3].rhw = 0;
+	vertices[3].x = (FLOAT)x;
+	vertices[3].y = (FLOAT)(y + height);
+	vertices[3].z = 0.0f;
+	vertices[3].rhw = 0.0f;
 
 	// top right 2
-	vertices[4].x = x + width;
-	vertices[4].y = y;
-	vertices[4].z = 0;
-	vertices[4].rhw = 0;
+	vertices[4].x = (FLOAT)(x + width);
+	vertices[4].y = (FLOAT)y;
+	vertices[4].z = 0.0f;
+	vertices[4].rhw = 0.0f;
 
 	// bottom right
-	vertices[5].x = x + width;
-	vertices[5].y = y + height;
-	vertices[5].z = 0;
-	vertices[5].rhw = 0;
+	vertices[5].x = (FLOAT)(x + width);
+	vertices[5].y = (FLOAT)(y + height);
+	vertices[5].z = 0.0f;
+	vertices[5].rhw = 0.0f;
 }
 
 void Pixel::Resize(UINT pWidth, UINT pHeight)

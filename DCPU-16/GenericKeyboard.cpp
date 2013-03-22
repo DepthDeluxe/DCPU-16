@@ -63,40 +63,40 @@ BOOL GenericKeyboard::KeyDown(WPARAM wParam, LPARAM lParam)
 	switch (wParam)
 	{
 	case VK_BACK:
-		convertedKey = GK_BACK;
+		convertedKey = (char)GK_BACK;
 		break;
 
 	case VK_RETURN:
-		convertedKey = GK_RETURN;
+		convertedKey = (char)GK_RETURN;
 		break;
 
 	case VK_DELETE:
-		convertedKey = GK_DELETE;
+		convertedKey = (char)GK_DELETE;
 		break;
 
 	case VK_UP:
-		convertedKey = GK_ARROW_UP;
+		convertedKey = (char)GK_ARROW_UP;
 		break;
 
 	case VK_DOWN:
-		convertedKey = GK_ARROW_DOWN;
+		convertedKey = (char)GK_ARROW_DOWN;
 		break;
 
 	case VK_LEFT:
-		convertedKey = GK_ARROW_LEFT;
+		convertedKey = (char)GK_ARROW_LEFT;
 		break;
 
 	case VK_RIGHT:
-		convertedKey = GK_ARROW_RIGHT;
+		convertedKey = (char)GK_ARROW_RIGHT;
 		break;
 
 	case VK_SHIFT:
-		convertedKey = GK_SHIFT;
+		convertedKey = (char)GK_SHIFT;
 		isShiftDown = TRUE;
 		break;
 
 	case VK_CONTROL:
-		convertedKey = GK_CONTROL;
+		convertedKey = (char)GK_CONTROL;
 		break;
 	}
 

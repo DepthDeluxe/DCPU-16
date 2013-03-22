@@ -3,6 +3,9 @@
 //	Author: Colin Heinzmann
 //	Description: Emulates the generic keyboard as specified at dcpu.com/keyboard
 
+//	NOTE:  Only partial keyboard support (thats kinda been hacked together).
+//		   Shift is a little funky and only the A-Z and 1-9 keys are mapped
+
 #ifndef GENERIC_KEYBOARD_H
 #define GENERIC_KEYBOARD_H
 
