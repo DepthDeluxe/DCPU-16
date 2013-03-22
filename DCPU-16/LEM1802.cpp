@@ -142,14 +142,13 @@ void LEM1802::InitDisplay(HWND hWnd)
 
 	UINT pixelWidth = D3D_SCREEN_WIDTH / LEM1802_WIDTH;
 	UINT pixelHeight = D3D_SCREEN_HEIGHT / LEM1802_HEIGHT;
-
+	
 	for (int n = 0; n < DISPLAY_WIDTH * DISPLAY_HEIGHT; n++)
 	{
 		int x = n % DISPLAY_WIDTH;
 		int y = floor((float)n / (float)DISPLAY_WIDTH);
 		pixels[n].Move(x * pixelWidth, y * pixelHeight);
 		pixels[n].Resize(pixelWidth, pixelHeight);
-		pixels[n].SetColor(n % 256, n % 256, n % 256);	 // set to debugging color
 	}
 }
 
@@ -354,7 +353,7 @@ void SeperateWindowThreadFunc(SWT_INPUT* in)
 		L"LEM1802",
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		D3D_SCREEN_WIDTH, D3D_SCREEN_HEIGHT,
+		D3D_SCREEN_WIDTH+11, D3D_SCREEN_HEIGHT+33,			// temp fix, I'm not sure why the pixel values need to change...
 		NULL,
 		NULL,
 		hInstance,
@@ -373,25 +372,64 @@ void SeperateWindowThreadFunc(SWT_INPUT* in)
 	*initialized = TRUE;
 	display->InitDisplay(*hWndPtr);
 
+
+	// launch the other draw thread
+	SWT_INPUT drawThreadIn;
+	drawThreadIn.classPtr = (void*)display;
+
+	BOOL drawThreadKillFlag = FALSE;
+	drawThreadIn.threadKillFlag = &drawThreadKillFlag;
+
+	BOOL isDrawThreadKilled = FALSE;
+	drawThreadIn.isThreadKilled = &isDrawThreadKilled;
+
+	DWORD drawThreadId;
+	HANDLE windowHandle = CreateThread(
+		NULL,
+		4096,
+		(LPTHREAD_START_ROUTINE)LEM1802DrawThreadFunc,
+		&drawThreadIn,
+		NULL,
+		&drawThreadId
+		);
+
+
 	MSG msg;
 	while( !*threadKillFlag )
 	{
 		if (!GetMessage( &msg, 0, 0, 0 ))
 			break;
 
-		// before drawing, check to see if keys have been pressed
-		//keyboard->Run();
-		// ^^ from now on, the keyboard will be run from inside the terminal :D
-
 		// perform rendering on another thread
-		display->Draw();
+		//display->Draw();
 
 		DispatchMessage(&msg);
 	}
 
+	// tell the other program to quit
+	drawThreadKillFlag = TRUE;
+	while (!isDrawThreadKilled)
+		Sleep(1);
+
 	// clean up the direct3d interface
 	display->CleanD3D();
 
+	*isThreadKilled = TRUE;
+}
+
+void LEM1802DrawThreadFunc(SWT_INPUT* in)
+{
+	LEM1802* display = (LEM1802*)in->classPtr;
+	BOOL* threadKillFlag = in->threadKillFlag;
+	BOOL* isThreadKilled = in->isThreadKilled;
+
+	// continues to run until display pointer is null
+	while (!*threadKillFlag)
+	{
+		display->Draw();
+	}
+
+	// send shutdown flag
 	*isThreadKilled = TRUE;
 }
 

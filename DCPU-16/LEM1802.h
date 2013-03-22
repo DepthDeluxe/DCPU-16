@@ -1,3 +1,9 @@
+//	File: LEM1802.h
+//
+//	Author: Colin Heinzmann
+//	Description: Class that emulates the LEM1802 display (see dcpu.com/monitor) using
+//				 the DirectX graphics and Win32 libraries
+
 #ifndef LEM1802_H
 #define LEM1802_H
 
@@ -91,6 +97,8 @@ public:
 };
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
 void SeperateWindowThreadFunc(SWT_INPUT* in);
+void LEM1802DrawThreadFunc(SWT_INPUT* in);
 
 #endif
