@@ -86,7 +86,7 @@ ConditionReturn TryRawInt(string text)
 	text.resize(text.length()-1);
 
 	// and try the value again
-	value = atof(text.c_str());
+	value = atoi(text.c_str());
 
 	if (value != 0)
 	{
@@ -234,7 +234,7 @@ BOOL ProcessDat(string text, vector<DCPU_Instruction>& instructions, UINT16& ins
 	bool inQuote = false;		// keeps track of the starting quote
 	bool inLiteral = false;		// keeps track to see if the string is in a literal
 	string tempStr = "";		// holds the temporary info
-	for (int n = 0; n < text.length(); n++)
+	for (UINT n = 0; n < text.length(); n++)
 	{
 		if (text[n] == ',' && !inQuote)
 		{
@@ -278,7 +278,7 @@ BOOL ProcessDat(string text, vector<DCPU_Instruction>& instructions, UINT16& ins
 			if (inQuote)
 			{
 				// add all of the string values byte by byte
-				for (int x = 0; x < tempStr.length(); x++)
+				for (UINT x = 0; x < tempStr.length(); x++)
 				{
 					DCPU_Instruction newInstruction;
 					newInstruction.opcode = NO_OP_DATA;

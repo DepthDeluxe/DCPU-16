@@ -43,8 +43,8 @@ void main(int argc, char** argv)
 	if (argc == 1)
 	{
 		cout << "=====================================" << endl;
-		cout << "DCPU-16 Assembler v1.0" << endl;
-		cout << "	Type file name after program to run" << endl;
+		cout << "DCPU-16 Assembler v1.0" << endl << endl;
+		cout << "Usage: DAssembler.exe [file]" << endl;
 		cout << "=====================================" << endl << endl;
 		return;
 	}
@@ -231,6 +231,11 @@ void main(int argc, char** argv)
 		aReturn = ProcessValue(aText, valuesDictionary, labelsDictionary);
 		if (aReturn.isLabel)
 			labelReferences.push_back( ReferencePointer(instructions.size(), aReturn.nextword, TRUE) );
+		else if (aReturn.value == -1)
+		{
+			cout << "Error: Line " << lineNumber+1 << " has an invalid command!" << endl;
+			return;
+		}
 
 		// only process b command if bText has been set
 		if (bText != "null")
@@ -238,6 +243,11 @@ void main(int argc, char** argv)
 			bReturn = ProcessValue(bText, valuesDictionary, labelsDictionary);
 			if (bReturn.isLabel)
 				labelReferences.push_back( ReferencePointer(instructions.size(), bReturn.nextword, FALSE) );
+			else if (bReturn.value == -1)
+			{
+				cout << "Error: Line " << lineNumber+1 << " has an invalid command!" << endl;
+				return;
+			}
 		}
 		else
 		{

@@ -56,7 +56,7 @@ UINT Dictionary::Length()
 
 BOOL Dictionary::IsAKey(string key)
 {
-	for (int n = 0; n < length; n++)
+	for (UINT n = 0; n < length; n++)
 	{
 		if (key == keys[n])
 			return TRUE;
@@ -67,7 +67,7 @@ BOOL Dictionary::IsAKey(string key)
 
 BOOL Dictionary::IsAKey(const char* key)
 {
-	for (int n = 0; n < length; n++)
+	for (UINT n = 0; n < length; n++)
 	{
 		if (strcmp(key, keys[n].c_str()) == 0 )
 			return TRUE;
