@@ -437,7 +437,7 @@ BOOL DCPU16::NextInstruction()
 		case JSR:
 			// check stack pointer range [0x0000,0xffff]
 			// and push the program counter on it
-			Push(ProgramCounter);
+			Push(ProgramCounter+1);
 
 			// now assign new value to program counter
 			ProgramCounter = *valueA;
