@@ -147,7 +147,7 @@ ConditionReturn TryAddBy(string text, Dictionary& dictionary)
 	}
 
 	// try to interpret the registers
-	if (firstValue < REG_J)
+	if (firstValue <= REG_J)
 	{
 		result.value = firstValue + 0x10;
 		result.nextword = secondValue;
