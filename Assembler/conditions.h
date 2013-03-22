@@ -1,3 +1,10 @@
+//	File: conditions.h
+//
+//	Author: Colin Heinzmann
+//	Description: Contains functions that look for the different statments that
+//				 can exist in the DCPU assembly
+
+
 #ifndef CONDITIONS_H
 #define CONDITIONS_H
 

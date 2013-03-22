@@ -123,12 +123,12 @@
     <ClCompile Include="Dictionary.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="code.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="conditions.h" />
     <ClInclude Include="dcpuspecs.h" />
     <ClInclude Include="Dictionary.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="code.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

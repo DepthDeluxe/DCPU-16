@@ -1,3 +1,8 @@
+//	File: dcpuspecs.h
+//
+//	Specification by:	Markus Persson
+//	Description:		Has all values of defined instructions from the DCPU-16 specification
+
 #ifndef DCPUSPECS
 #define DCPUSPECS
 

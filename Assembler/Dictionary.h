@@ -1,3 +1,9 @@
+//	File: Dictionary.h
+//
+//	Author: Colin Heinzmann
+//	Description: Basic dictionary class that makes mapping the text instructions
+//				 to their binary values making life easier)
+
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 
