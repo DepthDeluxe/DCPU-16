@@ -139,6 +139,8 @@ BOOL M35FD::ReadSector(int sectorNumber)
 
 	// read 1 full sector into the buffer
 	Disk.read((char*)buffer, 1024);
+
+	return TRUE;
 }
 
 BOOL M35FD::WriteSector(int sectorNumber)
@@ -155,6 +157,8 @@ BOOL M35FD::WriteSector(int sectorNumber)
 
 	// write 1 full sector into the buffer
 	Disk.write((char*)buffer, 1024);
+
+	return TRUE;
 }
 
 BOOL M35FD::LoadDrive(char* filename)

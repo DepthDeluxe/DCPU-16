@@ -45,7 +45,7 @@ void main()
 
 	// get file length
 	inFile.seekg(0, ios::end);
-	int fileLen = inFile.tellg();
+	int fileLen = (int)inFile.tellg();
 	inFile.seekg(0, ios::beg);
 
 	// get the code

@@ -146,7 +146,7 @@ void LEM1802::InitDisplay(HWND hWnd)
 	for (int n = 0; n < DISPLAY_WIDTH * DISPLAY_HEIGHT; n++)
 	{
 		int x = n % DISPLAY_WIDTH;
-		int y = floor((float)n / (float)DISPLAY_WIDTH);
+		int y = (int)floor((float)n / (float)DISPLAY_WIDTH);
 		pixels[n].Move(x * pixelWidth, y * pixelHeight);
 		pixels[n].Resize(pixelWidth, pixelHeight);
 	}
@@ -235,7 +235,7 @@ void LEM1802::Draw()
 
 			// these are starting pixels for mapping each character to the proper place on the emulated screen
 			int textXPos = n % TEXT_WIDTH;
-			int textYPos = floor((float)n / (float)TEXT_WIDTH);
+			int textYPos = (int)floor((float)n / (float)TEXT_WIDTH);
 			int displayXPos = textXPos * 4;
 			int displayYPos = textYPos * 8;
 
