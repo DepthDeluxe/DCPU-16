@@ -1,1 +1,0 @@
-move code.dexe ../DCPU-16/code.dexe

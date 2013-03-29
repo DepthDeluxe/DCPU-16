@@ -1,0 +1,31 @@
+; this program tests the stack pointer
+
+; init the display with memory starting at A
+SET A, 0
+SET B, 100
+HWI 2
+
+; push values onto the stack
+SET PUSH, 67
+SET PUSH, 66
+SET PUSH, 65
+
+SET I, 0
+
+:loop
+SET A, 15
+SHL A, 12
+
+SET B, POP
+ADD A, B
+
+SET [I+100], A
+
+; halt if reached the end
+:halt
+IFE I, 2
+SET PC, halt
+
+; go back to the beginning of the loop
+ADD I, 1
+SET PC, loop
